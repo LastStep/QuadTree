@@ -113,7 +113,7 @@ class qtree:
   def query(self, Range, found):
     try:
       if not self.boundary.intersect_circle(Range):
-       return
+        return
     except AttributeError:
       if not self.boundary.intersect_rectangle(Range):
         return
