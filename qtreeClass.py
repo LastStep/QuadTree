@@ -13,13 +13,32 @@ class rectangle:
   def contain(self, point):
     return self.x <= point.x < self.x + self.w and self.y <= point.y < self.y + self.h
 
-  def intersect(self, Range):
+  def intersect_rectangle(self, Range):
     if self.x + self.w < Range.x \
       or self.x > Range.x + Range.w \
       or self.y > Range.y + Range.h \
       or self.y + self.h < Range.y:
       return False
     return True
+
+  def intersect_circle(self, Range):
+    if self.contain(point(Range.x, Range.y)):
+      return True
+    if (self.x + self.w//2 - Range.x)**2 + (self.y - Range.y)**2 <= Range.radius**2 \
+      or (self.x - Range.x)**2 + (self.y + self.h//2- Range.y)**2 <= Range.radius**2 \
+      or (self.x + self.w - Range.x)**2 + (self.y + self.h//2 - Range.y)**2 <= Range.radius**2 \
+      or (self.x + self.w//2 - Range.x)**2 + (self.y + self.h - Range.y)**2 <= Range.radius**2:
+      return True
+    return False
+
+
+class circle:
+  def __init__(self, center, radius):
+    self.x, self.y = center
+    self.radius = radius
+
+  def contain(self, point):
+    return (point.x - self.x)**2 + (point.y - self.y)**2 < self.radius**2
 
 class qtree:
   def __init__(self, boundary, capacity):
@@ -68,7 +87,7 @@ class qtree:
     py.draw.rect(screen, (255,255,255), (x,y,w,h), 1)
 
     for p in self.points:
-      py.draw.circle(screen, (0,255,0), (p.x, p.y), 2, 1)
+      py.draw.circle(screen, (255,255,255), (p.x, p.y), 2, 1)
 
     if self.divided:
       if len(self.northwest.points) != 0:
@@ -91,17 +110,20 @@ class qtree:
       else:
         self.southwest.points.append(point)
 
-  def query(self, Range, found = []):
-    if not self.boundary.intersect(Range):
-      return
+  def query(self, Range, found):
+    try:
+      if not self.boundary.intersect_circle(Range):
+       return
+    except AttributeError:
+      if not self.boundary.intersect_rectangle(Range):
+        return
+    if self.divided:
+      self.northwest.query(Range, found)
+      self.northeast.query(Range, found)
+      self.southeast.query(Range, found)
+      self.southwest.query(Range, found)
     else:
-      if self.divided:
-        self.northwest.query(Range, found)
-        self.northeast.query(Range, found)
-        self.southeast.query(Range, found)
-        self.southwest.query(Range, found)
-      else:
-        for point in self.points:
-          if Range.contain(point):
-            found.append(point)
+      for point in self.points:
+        if Range.contain(point):
+          found.append(point)
     return found
