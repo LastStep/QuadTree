@@ -22,14 +22,9 @@ class rectangle:
     return True
 
   def intersect_circle(self, Range):
-    if self.contain(point(Range.x, Range.y)):
-      return True
-    if (self.x + self.w//2 - Range.x)**2 + (self.y - Range.y)**2 <= Range.radius**2 \
-      or (self.x - Range.x)**2 + (self.y + self.h//2- Range.y)**2 <= Range.radius**2 \
-      or (self.x + self.w - Range.x)**2 + (self.y + self.h//2 - Range.y)**2 <= Range.radius**2 \
-      or (self.x + self.w//2 - Range.x)**2 + (self.y + self.h - Range.y)**2 <= Range.radius**2:
-      return True
-    return False
+    delta_x = Range.x - max(self.x, min(Range.x, self.x + self.w))
+    delta_y = Range.y - max(self.y, min(Range.y, self.y + self.h))
+    return delta_x**2 + delta_y**2 < Range.radius**2
 
 
 class circle:
