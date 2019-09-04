@@ -3,16 +3,18 @@ import qtreeClass as qt
 from random import randint
 py.init()
 
+number_of_points = 300
+
 width, height = 800, 800
 screen = py.display.set_mode((width,height))
 
 Qtree = qt.qtree((0,0,width,height), 4)
 points = []
-for i in range(300):
+for i in range(number_of_points):
   points.append(qt.point(randint(0, width), randint(0, height)))
 
 def get_point():
-  for point in points:
+  for _ in points:
     yield points.pop(0)
 
 range_rectangle = qt.rectangle(
@@ -43,7 +45,7 @@ while game:
     Qtree.insert(point)
     Qtree.show(screen)
     py.display.update()
-    # clock.tick(60)
+
   if len(points) == 0:
     circle_points = get_range_circle()
     rectanle_points = get_range_rectangle()
@@ -55,5 +57,6 @@ while game:
     for point in intersecting_points:
       py.draw.circle(screen, (0,255,0), (point.x, point.y), 2, 2)
   py.display.update()
+
 
 py.quit()
